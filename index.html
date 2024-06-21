@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入国審査</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-text {
+            font-size: 48px;
+        }
+
+        .green-text {
+            color: green;
+        }
+
+        .red-text {
+            color: red;
+        }
+
+        .return-button, .reset-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+
+        .flash {
+            font-size: 48px;
+            animation: flash var(--flash-speed, 0.5s) alternate infinite;
+        }
+
+        @keyframes flash {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .gacha-animation {
+            width: 1000px;
+            height: 1000px;
+            background-image: url('hujitaka.jpg'); /* ガチャ演出の画像のパスを指定してください */
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0;
+            animation: fadeIn var(--gacha-time, 1s) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="entryButton">入国審査ボタン</button>
+        <div id="resultText" class="result-text hidden"></div>
+        <div id="gachaImage" class="gacha-animation hidden"></div>
+        <button id="resetButton" class="reset-button hidden">リセット</button>
+    </div>
+
+    <script>
+        const entryButton = document.getElementById('entryButton');
+        const resultText = document.getElementById('resultText');
+        const resetButton = document.getElementById('resetButton');
+        const gachaImage = document.getElementById('gachaImage');
+        const texts = ['入国可', '入国拒否'];
+        const colors = ['green-text', 'red-text'];
+
+        // 点滅速度とガチャ演出時間の設定
+        const flashSpeed = 0.1; // 秒単位で点滅速度を設定
+        const gachaTime = 2; // 秒単位でガチャ演出時間を設定
+
+        document.documentElement.style.setProperty('--flash-speed', `${flashSpeed}s`);
+        document.documentElement.style.setProperty('--gacha-time', `${gachaTime}s`);
+
+        entryButton.addEventListener('click', function() {
+            entryButton.classList.add('hidden');
+            resultText.classList.remove('hidden');
+            resultText.classList.add('flash');
+            let counter = 0;
+            const interval = setInterval(() => {
+                const index = counter % texts.length;
+                resultText.textContent = texts[index];
+                resultText.className = 'result-text ' + colors[index] + ' flash';
+                counter++;
+            }, flashSpeed * 1000);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                resultText.classList.remove('flash');
+                resultText.classList.add('hidden');
+                gachaImage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    gachaImage.classList.add('hidden');
+                    const finalIndex = Math.floor(Math.random() * texts.length);
+                    resultText.textContent = texts[finalIndex];
+                    resultText.className = 'result-text ' + colors[finalIndex];
+                    resultText.classList.remove('hidden');
+                    resetButton.classList.remove('hidden');
+                }, gachaTime * 1000);
+            }, 3000);
+        });
+
+        resetButton.addEventListener('click', function() {
+            resultText.classList.add('hidden');
+            resetButton.classList.add('hidden');
+            entryButton.classList.remove('hidden');
+            gachaImage.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
